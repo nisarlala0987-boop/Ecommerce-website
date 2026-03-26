@@ -63,7 +63,7 @@ createUserWithEmailAndPassword(auth, no.value,nom.value)
     console.log(user)
 no.value=""
 nom.value=""
-   window.location.href = "shop (1).html"
+   window.location.href = "index.html"
 
   })
   .catch((error) => {
@@ -91,7 +91,7 @@ signInWithEmailAndPassword(auth, lala.value, pasw.value)
     // location.href="https://youtube.com  "
   lala.value = ""   
     pasw.value = ""
-   window.location.href = "shop (1).html"
+   window.location.href = "index.html"
   })
   .catch((error) => {
     const errorCode = error.code;
@@ -109,7 +109,7 @@ if(logout) logout.addEventListener("click",logouts)
 function logouts() {
     signOut(auth)
     .then(() => {
-   window.location.href = "shop (1).html"
+   window.location.href = "index.html"
 
     })
     .catch((error) => {
@@ -127,7 +127,7 @@ function googlesign() {
   .then((result) => {
     const credential = GoogleAuthProvider.credentialFromResult(result);
     const token = credential.accessToken;
-   window.location.href = "shop (1).html"
+   window.location.href = "index.html"
 
   }).catch((error) => {
     // Handle Errors here.

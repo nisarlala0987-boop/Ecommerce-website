@@ -1,99 +1,245 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="ss.css">
-    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NOVA SHOP — Premium Store</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <!-- <button onclick="alert('orr suna'); console.log('gand mai keera hai')">click me!</button>
-    <button ondblclick=" console.log('or bhai')">click me 2 time</button> -->
-<!-- <div style="width: 50px;height: 50px; border: 2px solid black;" onmouseover="alert('or abhi aa na ')">or abhi aa na </div> -->
-<!-- <a onclick="var message='hello'; alert(message);">Facebook</a> -->
-<!-- 
-<a onclick="test('hello')">click me</a>
-<script>
-    function test(message) {
-        alert(message);
-    }
-</script>
-<img src="https://www.bmwgroup.com/en/company/_jcr_content/main/layoutcontainer_1988/columncontrol/columncontrolparsys/globalimage.coreimg.jpeg/1758537295862/720x720-i5er.jpeg" width="200px" alt="" onmouseover="src='https://www.usnews.com/object/image/00000195-f89c-d9b4-add5-fadd38740000/img-9805.jpeg?update-time=1743632742453&size=responsiveGallery&format=webp' "> -->
 
-<!-- <p id="para" onclick="showfull()"> click for more information....</p> -->
+<!-- NAVBAR -->
+<nav>
+  <a href="#" class="nav-logo">NOVA<span>.</span></a>
+  <ul class="nav-links ">
+    <li><a href="#products">Products</a></li>
+    <li><a href="#categories">Categories</a></li>
+    <li><a href="#deals">Deals</a></li>
+    <li><a href="#about">About</a></li>
+  </ul>
 
-<!-- <input id="para" type="text" placeholder="enter tour name" onfocus="showfull()" > -->
+  
+ <div class="nav-actions">
+  <button onclick="window.location.href='login.html'"  class="nav-login">Login</button>
+  <button onclick="window.location.href='shop.html'" class="nav-signup">Sign Up</button>
 
-
-<!-- <input type="text" placeholder="enter your name" onfocus="nisar()" id="para"> -->
-<!-- <form   onsubmit="nisar(event)">
-    
-    <input type="text" id="jaha">
-    <input type="submit" value="send">
-</form> -->
-<!-- <input placeholder="enter your name"id="para">
-<ul id="demo"></ul> 
-<button onclick="todo()" id="click">Show Name</button> -->
-
-<!-- <button id="click">click</button> -->
-
-
-<!-- <div id="nisa">
-<div><input id="input" placeholder="enter a item"></div>
-    
-<div><button id="add">Button</button></div>
-<div><ul id="ul"></ul></div>
-
-    
-</div> -->
-
-
-
-
-
-
-<div class="wrapper">
-
-  <h3 id="output"></h3>
-
-  <div id="auth">
-    <p class="title">Sign Up</p>
-
-    <label for="place">enter your email</label>
-    <input type="text" placeholder="" id="place">
-
-    <label for="pss">enter your password</label>
-    <input type="password" id="pss" autocomplete="new-password">
-
-    <button id="pass">Sign Up</button>
-  </div>
-
-  <button id="google">
-    <svg width="17" height="17" viewBox="0 0 18 18">
-      <path fill="#4285F4" d="M17.64 9.2c0-.637-.057-1.251-.164-1.84H9v3.481h4.844c-.209 1.125-.843 2.078-1.796 2.717v2.258h2.908c1.702-1.567 2.684-3.874 2.684-6.615z"/>
-      <path fill="#34A853" d="M9 18c2.43 0 4.467-.806 5.956-2.184l-2.909-2.258c-.805.54-1.836.86-3.047.86-2.344 0-4.328-1.584-5.036-3.711H.957v2.332A8.997 8.997 0 0 0 9 18z"/>
-      <path fill="#FBBC05" d="M3.964 10.707A5.41 5.41 0 0 1 3.682 9c0-.593.102-1.17.282-1.707V4.961H.957A8.996 8.996 0 0 0 0 9c0 1.452.348 2.827.957 4.039l3.007-2.332z"/>
-      <path fill="#EA4335" d="M9 3.58c1.321 0 2.508.454 3.44 1.345l2.582-2.58C13.463.891 11.426 0 9 0A8.997 8.997 0 0 0 .957 4.961L3.964 6.293C4.672 4.166 6.656 3.58 9 3.58z"/>
-    </svg>
-    Continue with Google
+  <button class="nav-cart" onclick="toggleCart()">
+    🛍️ Cart
+    <span class="cart-badge" id="cart-count">0</span>
   </button>
+</div>
+</nav>
 
-  <p class="switch-link">Already have an account? <a href="login.html">Log In</a></p>
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-badge">
+      <span class="badge-dot"></span>
+      New Collection 2025
+    </div>
+    <h1>Shop the <em>Future</em><br>Live in Style</h1>
+    <p class="hero-desc">Discover premium products curated for the modern lifestyle. Quality you can feel, prices that make sense.</p>
+    <div class="hero-cta">
+      <button class="btn-primary" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Shop Now →</button>
+      <button class="btn-secondary" onclick="document.getElementById('categories').scrollIntoView({behavior:'smooth'})">Browse Categories</button>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-item">
+        <div class="stat-num">12K+</div>
+        <div class="stat-label">Products</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">98%</div>
+        <div class="stat-label">Happy Customers</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-num">4.9★</div>
+        <div class="stat-label">Avg Rating</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-main-card">
+      <div class="floating-badge fb-sale">🔥 Hot Deal</div>
+      <div class="floating-badge fb-stars">⭐ 4.9 Rating</div>
+      <div class="product-img-placeholder">🎧</div>
+      <div class="hero-card-info">
+        <div>
+          <div class="hero-card-name">Nova ProMax Headphones</div>
+          <div style="font-size:13px;color:var(--gray-400);margin-top:4px;">Premium Wireless Sound</div>
+        </div>
+        <div class="hero-card-price">$149</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="section" id="categories">
+  <div class="section-header reveal">
+    <div class="section-tag">Browse</div>
+    <h2 class="section-title">Shop by Category</h2>
+    <p class="section-sub">Find exactly what you're looking for across our wide range of product categories</p>
+  </div>
+  <div class="categories-grid">
+    <div class="category-card reveal" style="transition-delay:0.1s">
+      <span class="category-icon">🎧</span>
+      <div class="category-name">Electronics</div>
+      <div class="category-count">2,400+ items</div>
+    </div>
+    <div class="category-card reveal" style="transition-delay:0.2s">
+      <span class="category-icon">👟</span>
+      <div class="category-name">Fashion</div>
+      <div class="category-count">3,800+ items</div>
+    </div>
+    <div class="category-card reveal" style="transition-delay:0.3s">
+      <span class="category-icon">🏠</span>
+      <div class="category-name">Home & Living</div>
+      <div class="category-count">1,900+ items</div>
+    </div>
+    <div class="category-card reveal" style="transition-delay:0.4s">
+      <span class="category-icon">💄</span>
+      <div class="category-name">Beauty</div>
+      <div class="category-count">1,200+ items</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRODUCTS -->
+<section class="section section-alt" id="products">
+  <div class="section-header reveal">
+    <div class="section-tag">Featured</div>
+    <h2 class="section-title">Top Products</h2>
+    <p class="section-sub">Hand-picked bestsellers loved by thousands of happy customers</p>
+  </div>
+  <div class="products-grid" id="products-grid"></div>
+</section>
+
+<!-- PROMO BANNER -->
+<div class="promo-banner reveal" id="deals">
+  <div>
+    <div class="promo-tag">⚡ Limited Time</div>
+    <h2 class="promo-title">Summer Sale —<br>Up to 60% Off</h2>
+    <p class="promo-desc">Don't miss out on our biggest sale of the year. Premium products at unbeatable prices, for a limited time only.</p>
+  </div>
+  <div class="promo-cta">
+    <button class="btn-white" onclick="document.getElementById('products').scrollIntoView({behavior:'smooth'})">Grab the Deal →</button>
+    <div class="promo-timer">
+      <div class="timer-box"><span class="timer-num" id="t-h">00</span><span class="timer-label">Hours</span></div>
+      <div class="timer-box"><span class="timer-num" id="t-m">00</span><span class="timer-label">Mins</span></div>
+      <div class="timer-box"><span class="timer-num" id="t-s">00</span><span class="timer-label">Secs</span></div>
+    </div>
+  </div>
 </div>
 
+<!-- FEATURES -->
+<section class="section" id="about">
+  <div class="features-grid">
+    <div class="feature-item reveal" style="transition-delay:0.1s">
+      <div class="feature-icon-wrap">🚀</div>
+      <div class="feature-title">Fast Delivery</div>
+      <p class="feature-desc">Express shipping nationwide. Same-day delivery available in major cities.</p>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.2s">
+      <div class="feature-icon-wrap">🔒</div>
+      <div class="feature-title">Secure Payment</div>
+      <p class="feature-desc">Bank-grade SSL encryption. All major cards and wallets accepted.</p>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.3s">
+      <div class="feature-icon-wrap">↩️</div>
+      <div class="feature-title">Easy Returns</div>
+      <p class="feature-desc">30-day hassle-free returns. No questions asked, full refund guaranteed.</p>
+    </div>
+    <div class="feature-item reveal" style="transition-delay:0.4s">
+      <div class="feature-icon-wrap">💬</div>
+      <div class="feature-title">24/7 Support</div>
+      <p class="feature-desc">Round-the-clock customer support via chat, email, and phone.</p>
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<div class="newsletter">
+  <div class="newsletter-inner reveal">
+    <h2>Stay in the Loop 📬</h2>
+    <p>Get exclusive deals, new arrivals and early access to sales straight to your inbox.</p>
+    <div class="newsletter-form">
+      <input type="email" placeholder="Enter your email address..." id="nl-email">
+      <button onclick="subscribeNL()">Subscribe</button>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="footer-brand-name">NOVA<span>.</span></div>
+      <p class="footer-desc">Your go-to destination for premium products. Quality, style, and value — all in one place.</p>
+    </div>
+    <div>
+      <div class="footer-col-title">Shop</div>
+      <ul class="footer-links">
+        <li><a href="#">New Arrivals</a></li>
+        <li><a href="#">Best Sellers</a></li>
+        <li><a href="#">Sale</a></li>
+        <li><a href="#">Brands</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Help</div>
+      <ul class="footer-links">
+        <li><a href="#">Track Order</a></li>
+        <li><a href="#">Returns</a></li>
+        <li><a href="#">FAQ</a></li>
+        <li><a href="#">Contact</a></li>
+      </ul>
+    </div>
+    <div>
+      <div class="footer-col-title">Company</div>
+      <ul class="footer-links">
+        <li><a href="#">About Us</a></li>
+        <li><a href="#">Careers</a></li>
+        <li><a href="#">Press</a></li>
+        <li><a href="#">Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 NOVA Shop. All rights reserved.</span>
+    <span>Made with ❤️ for shoppers</span>
+  </div>
+</footer>
+
+<!-- CART -->
+<div class="cart-overlay" id="cart-overlay" onclick="toggleCart()"></div>
+<div class="cart-panel" id="cart-panel">
+  <div class="cart-header">
+    <div class="cart-title">Your Cart</div>
+    <button class="cart-close" onclick="toggleCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cart-items">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🛍️</div>
+      <p>Your cart is empty.<br>Start shopping!</p>
+    </div>
+  </div>
+  <div class="cart-footer" id="cart-footer" style="display:none">
+    <div class="cart-total">
+      <span class="cart-total-label">Total</span>
+      <span class="cart-total-amount" id="cart-total">$0</span>
+    </div>
+    <button class="checkout-btn" onclick="showToast('🎉 Order placed successfully!')">Checkout →</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <span id="toast-msg">Added to cart!</span>
+</div>
+
+<script src="app.js"></script>
 <script src="javascript.js" type="module"></script>
 </body>
-
 </html>
-
-
-
-
-
-
-
-
-
-
-
