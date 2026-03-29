@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NOVA Admin Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --blue-50: #EFF6FF;
+      --blue-100: #DBEAFE;
+      --blue-400: #60A5FA;
+      --blue-500: #3B82F6;
+      --blue-600: #2563EB;
+      --blue-700: #1D4ED8;
+      --white: #FFFFFF;
+      --gray-50: #F8FAFC;
+      --gray-100: #F1F5F9;
+      --gray-200: #E2E8F0;
+      --gray-400: #94A3B8;
+      --gray-600: #475569;
+      --gray-800: #1E293B;
+      --gray-900: #0F172A;
+      --red-500: #EF4444;
+      --red-100: #FEE2E2;
+      --green-500: #22C55E;
+      --green-100: #DCFCE7;
+      --font-display: 'Syne', sans-serif;
+      --font-body: 'DM Sans', sans-serif;
+      --shadow-sm: 0 1px 3px rgba(37,99,235,0.08);
+      --shadow-md: 0 4px 16px rgba(37,99,235,0.12);
+      --shadow-lg: 0 16px 48px rgba(37,99,235,0.16);
+      --radius: 16px;
+    }
+
+    body {
+      font-family: var(--font-body);
+      background: var(--gray-50);
+      color: var(--gray-800);
+      min-height: 100vh;
+    }
+
+    /* ── TOP NAV ── */
+    .topbar {
+      background: white;
+      border-bottom: 1px solid var(--blue-100);
+      padding: 0 32px;
+      height: 64px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .topbar-logo {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--blue-700);
+      text-decoration: none;
+    }
+
+    .topbar-logo span { color: var(--blue-400); }
+
+    .topbar-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .admin-badge {
+      background: var(--blue-100);
+      color: var(--blue-700);
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 50px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .topbar-user {
+      font-size: 13px;
+      color: var(--gray-600);
+      font-weight: 500;
+    }
+
+    .btn-back {
+      background: transparent;
+      border: 1px solid var(--gray-200);
+      color: var(--gray-600);
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-back:hover {
+      background: var(--gray-100);
+      border-color: var(--gray-400);
+    }
+
+    /* ── LAYOUT ── */
+    .dashboard {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 36px 24px;
+      display: grid;
+      grid-template-columns: 360px 1fr;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--blue-100);
+      padding: 28px;
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 88px;
+    }
+
+    .form-card-title {
+      font-family: var(--font-display);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gray-900);
+      margin-bottom: 6px;
+    }
+
+    .form-card-sub {
+      font-size: 13px;
+      color: var(--gray-400);
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--gray-600);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 7px;
+    }
+
+    .form-group input {
+      width: 100%;
+      border: 1.5px solid var(--gray-200);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      color: var(--gray-800);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      background: var(--gray-50);
+    }
+
+    .form-group input:focus {
+      border-color: var(--blue-400);
+      box-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+      background: white;
+    }
+
+    .form-group input::placeholder { color: var(--gray-400); }
+
+    /* image preview */
+    .img-preview {
+      width: 100%;
+      height: 130px;
+      border-radius: 10px;
+      border: 1.5px dashed var(--blue-200);
+      background: var(--blue-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 10px;
+      overflow: hidden;
+      transition: border-color 0.2s;
+    }
+
+    .img-preview img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .img-preview-placeholder {
+      font-size: 36px;
+      opacity: 0.4;
+    }
+
+    .btn-submit {
+      width: 100%;
+      background: var(--blue-600);
+      color: white;
+      border: none;
+      padding: 13px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.25s;
+      margin-top: 6px;
+      box-shadow: 0 4px 16px rgba(37,99,235,0.25);
+    }
+
+    .btn-submit:hover {
+      background: var(--blue-700);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(37,99,235,0.35);
+    }
+
+    .btn-cancel {
+      width: 100%;
+      background: transparent;
+      color: var(--gray-600);
+      border: 1.5px solid var(--gray-200);
+      padding: 11px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-top: 8px;
+      display: none;
+    }
+
+    .btn-cancel:hover { background: var(--gray-100); }
+    .btn-cancel.show { display: block; }
+
+    /* ── PRODUCTS PANEL ── */
+    .products-panel {}
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .panel-title {
+      font-family: var(--font-display);
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--gray-900);
+    }
+
+    .products-count {
+      font-size: 13px;
+      color: var(--gray-400);
+      background: var(--gray-100);
+      padding: 4px 12px;
+      border-radius: 50px;
+    }
+
+    /* ── PRODUCT TABLE ── */
+    .product-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .product-row {
+      background: white;
+      border: 1px solid var(--gray-200);
+      border-radius: 14px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      transition: all 0.25s;
+      animation: fadeIn 0.35s ease;
+    }
+
+    .product-row:hover {
+      border-color: var(--blue-200);
+      box-shadow: var(--shadow-md);
+      transform: translateY(-1px);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .product-row-img {
+      width: 64px;
+      height: 64px;
+      border-radius: 12px;
+      object-fit: cover;
+      background: var(--blue-50);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      overflow: hidden;
+      border: 1px solid var(--blue-100);
+    }
+
+    .product-row-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .product-row-info { flex: 1; min-width: 0; }
+
+    .product-row-name {
+      font-family: var(--font-display);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--gray-900);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .product-row-price {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--blue-600);
+      margin-top: 3px;
+    }
+
+    .product-row-actions {
+      display: flex;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .btn-edit {
+      background: var(--blue-50);
+      color: var(--blue-700);
+      border: 1px solid var(--blue-100);
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-edit:hover {
+      background: var(--blue-100);
+      border-color: var(--blue-300);
+    }
+
+    .btn-delete {
+      background: var(--red-100);
+      color: var(--red-500);
+      border: 1px solid #FECACA;
+      padding: 7px 16px;
+      border-radius: 50px;
+      font-family: var(--font-body);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-delete:hover {
+      background: #FEE2E2;
+      border-color: var(--red-500);
+    }
+
+    /* empty state */
+    .empty-state {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--gray-400);
+      background: white;
+      border-radius: var(--radius);
+      border: 1.5px dashed var(--gray-200);
+    }
+
+    .empty-state-icon { font-size: 48px; margin-bottom: 12px; }
+    .empty-state p { font-size: 14px; }
+
+    /* toast */
+    .toast {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--gray-900);
+      color: white;
+      padding: 12px 22px;
+      border-radius: 50px;
+      font-size: 13px;
+      font-weight: 500;
+      z-index: 999;
+      transition: transform 0.35s cubic-bezier(0.4,0,0.2,1);
+      white-space: nowrap;
+    }
+
+    .toast.show { transform: translateX(-50%) translateY(0); }
+    .toast.green { background: #166534; }
+
+    /* loading overlay */
+    #loading-screen {
+      position: fixed;
+      inset: 0;
+      background: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 999;
+      font-family: var(--font-display);
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--blue-700);
+    }
+
+    @media (max-width: 800px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .form-card { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Loading screen -->
+<div id="loading-screen">NOVA<span style="color:#60A5FA">.</span></div>
+
+<!-- TOP BAR -->
+<nav class="topbar">
+  <a href="index.html" class="topbar-logo">NOVA<span>.</span></a>
+  <div class="topbar-right">
+    <span class="admin-badge">Admin</span>
+    <span class="topbar-user" id="admin-email"></span>
+    <a href="index.html" class="btn-back">← Back to Store</a>
+  </div>
+</nav>
+
+<!-- DASHBOARD -->
+<div class="dashboard">
+
+  <!-- LEFT: Add / Edit Form -->
+  <div class="form-card">
+    <div class="form-card-title" id="form-title">Add Product</div>
+    <div class="form-card-sub" id="form-sub">Fill in the details to add a new product</div>
+
+    <div class="img-preview" id="img-preview">
+      <span class="img-preview-placeholder">🖼️</span>
+    </div>
+
+    <div class="form-group">
+      <label>Product Name</label>
+      <input type="text" id="f-name" placeholder="e.g. Nova AirPods Pro">
+    </div>
+
+    <div class="form-group">
+      <label>Price ($)</label>
+      <input type="number" id="f-price" placeholder="e.g. 89" min="0" step="0.01">
+    </div>
+
+    <div class="form-group">
+      <label>Image URL</label>
+      <input type="text" id="f-image" placeholder="https://..." oninput="previewImg()">
+    </div>
+
+    <button class="btn-submit" id="btn-submit" onclick="submitProduct()">Add Product</button>
+    <button class="btn-cancel" id="btn-cancel" onclick="cancelEdit()">Cancel Edit</button>
+  </div>
+
+  <!-- RIGHT: Products List -->
+  <div class="products-panel">
+    <div class="panel-header">
+      <div class="panel-title">All Products</div>
+      <div class="products-count" id="products-count">0 products</div>
+    </div>
+    <div class="product-list" id="product-list">
+      <div class="empty-state">
+        <div class="empty-state-icon">📦</div>
+        <p>No products yet. Add your first one!</p>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script type="module">
+  import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+  import {
+    getDatabase, ref, push, onValue, update, remove
+  } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6H0JXLi8aV8rApfmkDeZBgFQk2vGHzxM",
+    authDomain: "login-form-c178f.firebaseapp.com",
+    databaseURL: "https://login-form-c178f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "login-form-c178f",
+    storageBucket: "login-form-c178f.firebasestorage.app",
+    messagingSenderId: "954559059965",
+    appId: "1:954559059965:web:80fa0f124c714d9d1bab94"
+  };
+
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const auth = getAuth(app);
+  const db = getDatabase(app);
+
+  // ── Auth check ──
+  onAuthStateChanged(auth, (user) => {
+    document.getElementById("loading-screen").style.display = "none";
+    if (!user) {
+      window.location.href = "login.html";
+      return;
+    }
+    document.getElementById("admin-email").textContent = user.email || user.displayName || "";
+    loadProducts();
+  });
+
+  // ── State ──
+  let editingId = null;
+
+  // ── Real-time load ──
+  function loadProducts() {
+    const productsRef = ref(db, "products/");
+    onValue(productsRef, (snapshot) => {
+      const data = snapshot.val();
+      const list = document.getElementById("product-list");
+      const countEl = document.getElementById("products-count");
+
+      if (!data) {
+        countEl.textContent = "0 products";
+        list.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📦</div>
+            <p>No products yet. Add your first one!</p>
+          </div>`;
+        return;
+      }
+
+      const products = Object.entries(data).map(([id, val]) => ({ id, ...val }));
+      countEl.textContent = `${products.length} product${products.length !== 1 ? 's' : ''}`;
+
+      list.innerHTML = products.map(p => `
+        <div class="product-row" id="row-${p.id}">
+          <div class="product-row-img">
+            ${p.image
+              ? `<img src="${p.image}" alt="${p.name}" onerror="this.parentElement.innerHTML='🛍️'">`
+              : '🛍️'}
+          </div>
+          <div class="product-row-info">
+            <div class="product-row-name">${p.name}</div>
+            <div class="product-row-price">$${parseFloat(p.price).toFixed(2)}</div>
+          </div>
+          <div class="product-row-actions">
+            <button class="btn-edit" onclick="window.startEdit('${p.id}', '${escapeQuotes(p.name)}', '${p.price}', '${escapeQuotes(p.image || '')}')">Edit</button>
+            <button class="btn-delete" onclick="window.deleteProduct('${p.id}')">Delete</button>
+          </div>
+        </div>
+      `).join('');
+    });
+  }
+
+  function escapeQuotes(str) {
+    return str.replace(/'/g, "\\'").replace(/"/g, '\\"');
+  }
+
+  // ── Add / Update ──
+  window.submitProduct = function () {
+    const name  = document.getElementById("f-name").value.trim();
+    const price = document.getElementById("f-price").value.trim();
+    const image = document.getElementById("f-image").value.trim();
+
+    if (!name || !price) {
+      showToast("⚠️ Name and Price are required");
+      return;
+    }
+
+    if (editingId) {
+      update(ref(db, `products/${editingId}`), { name, price: parseFloat(price), image })
+        .then(() => { showToast("✅ Product updated!", true); cancelEdit(); })
+        .catch(() => showToast("❌ Update failed"));
+    } else {
+      push(ref(db, "products/"), { name, price: parseFloat(price), image })
+        .then(() => { showToast("✅ Product added!", true); clearForm(); })
+        .catch(() => showToast("❌ Failed to add product"));
+    }
+  };
+
+  // ── Edit ──
+  window.startEdit = function (id, name, price, image) {
+    editingId = id;
+    document.getElementById("f-name").value  = name;
+    document.getElementById("f-price").value = price;
+    document.getElementById("f-image").value = image;
+    document.getElementById("form-title").textContent = "Edit Product";
+    document.getElementById("form-sub").textContent   = "Update the product details below";
+    document.getElementById("btn-submit").textContent = "Update Product";
+    document.getElementById("btn-cancel").classList.add("show");
+    previewImg();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  window.cancelEdit = function () {
+    editingId = null;
+    clearForm();
+    document.getElementById("form-title").textContent = "Add Product";
+    document.getElementById("form-sub").textContent   = "Fill in the details to add a new product";
+    document.getElementById("btn-submit").textContent = "Add Product";
+    document.getElementById("btn-cancel").classList.remove("show");
+  };
+
+  // ── Delete ──
+  window.deleteProduct = function (id) {
+    if (!confirm("Delete this product?")) return;
+    remove(ref(db, `products/${id}`))
+      .then(() => showToast("🗑️ Product deleted"))
+      .catch(() => showToast("❌ Delete failed"));
+  };
+
+  // ── Image preview ──
+  window.previewImg = function () {
+    const url = document.getElementById("f-image").value.trim();
+    const preview = document.getElementById("img-preview");
+    if (url) {
+      preview.innerHTML = `<img src="${url}" alt="preview" onerror="this.parentElement.innerHTML='<span class=img-preview-placeholder>🖼️</span>'">`;
+    } else {
+      preview.innerHTML = `<span class="img-preview-placeholder">🖼️</span>`;
+    }
+  };
+
+  function clearForm() {
+    document.getElementById("f-name").value  = "";
+    document.getElementById("f-price").value = "";
+    document.getElementById("f-image").value = "";
+    document.getElementById("img-preview").innerHTML = `<span class="img-preview-placeholder">🖼️</span>`;
+  }
+
+  // ── Toast ──
+  let toastTimer;
+  function showToast(msg, green = false) {
+    const t = document.getElementById("toast");
+    t.textContent = msg;
+    t.className = "toast show" + (green ? " green" : "");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = "toast", 2800);
+  }
+</script>
+
+</body>
+</html>

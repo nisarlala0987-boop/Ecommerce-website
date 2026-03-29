@@ -1,138 +1,212 @@
+// ─────────────────────────────────────────────
+// app.js  —  NOVA Shop
+// Products: Firebase Realtime Database (real-time)
+// Cart, Toast, Timer, Reveal: unchanged
+// ─────────────────────────────────────────────
 
-const products = [
-  { id:1, name:'Nova AirPods Pro', brand:'NOVA Audio', price:89, oldPrice:129, emoji:'🎧', tag:'Bestseller', rating:4.9, reviews:2341 },
-  { id:2, name:'UltraSlim Watch X', brand:'Nova Wear', price:199, oldPrice:249, emoji:'⌚', tag:'New', rating:4.8, reviews:893 },
-  { id:3, name:'4K Smart Camera', brand:'Nova Lens', price:349, oldPrice:449, emoji:'📷', tag:'Sale', rating:4.7, reviews:567 },
-  { id:4, name:'Wireless Keyboard', brand:'Nova Type', price:59, oldPrice:null, emoji:'⌨️', tag:'Popular', rating:4.6, reviews:1204 },
-  { id:5, name:'Gaming Mouse Pro', brand:'Nova Game', price:79, oldPrice:99, emoji:'🖱️', tag:'Sale', rating:4.8, reviews:3210 },
-  { id:6, name:'Smart LED Lamp', brand:'Nova Light', price:45, oldPrice:null, emoji:'💡', tag:'New', rating:4.5, reviews:445 },
-];
+import { initializeApp, getApps } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-database.js";
 
-let cart = [];
+const firebaseConfig = {
+  apiKey: "AIzaSyD6H0JXLi8aV8rApfmkDeZBgFQk2vGHzxM",
+  authDomain: "login-form-c178f.firebaseapp.com",
+  databaseURL: "https://login-form-c178f-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "login-form-c178f",
+  storageBucket: "login-form-c178f.firebasestorage.app",
+  messagingSenderId: "954559059965",
+  appId: "1:954559059965:web:80fa0f124c714d9d1bab94"
+};
 
-function renderProducts() {
-  const grid = document.getElementById('products-grid');
-  grid.innerHTML = products.map((p,i) => `
-    <div class="product-card reveal" style="transition-delay:${i*0.1}s">
-      <div class="product-thumb">
-        <div class="product-tag-label${p.tag==='Sale'?' sale':''}">${p.tag}</div>
-        <button class="wishlist-btn" onclick="toggleWish(this)" title="Wishlist">🤍</button>
-        <span style="font-size:64px;">${p.emoji}</span>
-      </div>
-      <div class="product-info">
-        <div class="product-brand">${p.brand}</div>
-        <div class="product-name">${p.name}</div>
-        <div class="product-rating">
-          <span class="stars">${'★'.repeat(Math.floor(p.rating))}${'☆'.repeat(5-Math.floor(p.rating))}</span>
-          <span class="rating-count">${p.rating} (${p.reviews.toLocaleString()})</span>
+const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+const db  = getDatabase(app);
+
+// ── REAL-TIME PRODUCTS FROM FIREBASE ──
+let firebaseProducts = [];
+
+onValue(ref(db, "products/"), (snapshot) => {
+  const data = snapshot.val();
+  firebaseProducts = [];
+
+  if (data) {
+    Object.entries(data).forEach(([id, val]) => {
+      firebaseProducts.push({ id, ...val });
+    });
+  }
+
+  renderProducts(firebaseProducts);
+});
+
+// ── RENDER PRODUCTS ──
+function renderProducts(products) {
+  const grid = document.getElementById("products-grid");
+  if (!grid) return;
+
+  if (!products || products.length === 0) {
+    grid.innerHTML = `
+      <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:#94A3B8;">
+        <div style="font-size:48px;margin-bottom:12px;">📦</div>
+        <p style="font-size:15px;">No products yet. Check back soon!</p>
+      </div>`;
+    return;
+  }
+
+  grid.innerHTML = products.map((p, i) => {
+    const hasImg = p.image && p.image.trim() !== "";
+    const thumb  = hasImg
+      ? `<img src="${p.image}" alt="${p.name}"
+              style="width:100%;height:100%;object-fit:cover;"
+              onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">`
+      : "";
+    const emoji  = `<span style="font-size:64px;${hasImg ? 'display:none' : ''}">🛍️</span>`;
+
+    return `
+      <div class="product-card reveal" style="transition-delay:${i * 0.08}s">
+        <div class="product-thumb">
+          <div class="product-tag-label">New</div>
+          <button class="wishlist-btn" onclick="toggleWish(this)" title="Wishlist">🤍</button>
+          ${thumb}
+          ${emoji}
         </div>
-        <div class="product-price-row">
-          <div>
-            <span class="product-price">$${p.price}</span>
-            ${p.oldPrice ? `<span class="product-price-old">$${p.oldPrice}</span>` : ''}
+        <div class="product-info">
+          <div class="product-brand">NOVA Store</div>
+          <div class="product-name">${p.name}</div>
+          <div class="product-rating">
+            <span class="stars">★★★★★</span>
+            <span class="rating-count">5.0</span>
           </div>
-          <button class="add-cart-btn" onclick="addToCart(${p.id})">Add to Cart +</button>
+          <div class="product-price-row">
+            <div>
+              <span class="product-price">$${parseFloat(p.price).toFixed(2)}</span>
+            </div>
+            <button class="add-cart-btn" onclick="addToCart('${p.id}')">Add to Cart +</button>
+          </div>
         </div>
-      </div>
-    </div>
-  `).join('');
+      </div>`;
+  }).join("");
+
   observeReveal();
 }
 
-function toggleWish(btn) {
-  btn.classList.toggle('active');
-  btn.textContent = btn.classList.contains('active') ? '❤️' : '🤍';
-}
+// ── CART ──
+let cart = [];
 
-function addToCart(id) {
-  const p = products.find(x => x.id === id);
+window.addToCart = function (id) {
+  const p = firebaseProducts.find(x => x.id === id);
+  if (!p) return;
   const existing = cart.find(x => x.id === id);
   if (existing) existing.qty++;
   else cart.push({ ...p, qty: 1 });
   updateCart();
   showToast(`🛍️ ${p.name} added to cart!`);
-}
+};
 
-function removeFromCart(id) {
+window.removeFromCart = function (id) {
   cart = cart.filter(x => x.id !== id);
   updateCart();
-}
+};
 
 function updateCart() {
-  const count = cart.reduce((a,x) => a + x.qty, 0);
-  document.getElementById('cart-count').textContent = count;
+  const count = cart.reduce((a, x) => a + x.qty, 0);
+  const countEl = document.getElementById("cart-count");
+  if (countEl) countEl.textContent = count;
 
-  const itemsEl = document.getElementById('cart-items');
-  const footerEl = document.getElementById('cart-footer');
+  const itemsEl  = document.getElementById("cart-items");
+  const footerEl = document.getElementById("cart-footer");
+  if (!itemsEl) return;
 
   if (cart.length === 0) {
-    itemsEl.innerHTML = `<div class="cart-empty"><div class="cart-empty-icon">🛍️</div><p>Your cart is empty.<br>Start shopping!</p></div>`;
-    footerEl.style.display = 'none';
+    itemsEl.innerHTML = `
+      <div class="cart-empty">
+        <div class="cart-empty-icon">🛍️</div>
+        <p>Your cart is empty.<br>Start shopping!</p>
+      </div>`;
+    if (footerEl) footerEl.style.display = "none";
     return;
   }
 
-  footerEl.style.display = 'block';
+  if (footerEl) footerEl.style.display = "block";
   itemsEl.innerHTML = cart.map(item => `
     <div class="cart-item">
-      <div class="cart-item-thumb">${item.emoji}</div>
+      <div class="cart-item-thumb">
+        ${item.image
+          ? `<img src="${item.image}" style="width:100%;height:100%;object-fit:cover;border-radius:10px;" onerror="this.parentElement.textContent='🛍️'">`
+          : "🛍️"}
+      </div>
       <div class="cart-item-info">
         <div class="cart-item-name">${item.name}</div>
-        <div class="cart-item-price">$${item.price} × ${item.qty}</div>
+        <div class="cart-item-price">$${parseFloat(item.price).toFixed(2)} × ${item.qty}</div>
       </div>
-      <button class="cart-item-remove" onclick="removeFromCart(${item.id})">✕</button>
+      <button class="cart-item-remove" onclick="removeFromCart('${item.id}')">✕</button>
     </div>
-  `).join('');
+  `).join("");
 
-  const total = cart.reduce((a,x) => a + x.price * x.qty, 0);
-  document.getElementById('cart-total').textContent = `$${total}`;
+  const total = cart.reduce((a, x) => a + x.price * x.qty, 0);
+  const totalEl = document.getElementById("cart-total");
+  if (totalEl) totalEl.textContent = `$${total.toFixed(2)}`;
 }
 
-function toggleCart() {
-  document.getElementById('cart-panel').classList.toggle('open');
-  document.getElementById('cart-overlay').classList.toggle('open');
-}
+// ── WISHLIST ──
+window.toggleWish = function (btn) {
+  btn.classList.toggle("active");
+  btn.textContent = btn.classList.contains("active") ? "❤️" : "🤍";
+};
 
+// ── CART TOGGLE ──
+window.toggleCart = function () {
+  document.getElementById("cart-panel")?.classList.toggle("open");
+  document.getElementById("cart-overlay")?.classList.toggle("open");
+};
+
+// ── TOAST ──
 let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toast-msg').textContent = msg;
-  t.classList.add('show');
+window.showToast = function (msg) {
+  const t = document.getElementById("toast");
+  if (!t) return;
+  document.getElementById("toast-msg").textContent = msg;
+  t.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
-}
+  toastTimer = setTimeout(() => t.classList.remove("show"), 2800);
+};
 
-function subscribeNL() {
-  const email = document.getElementById('nl-email').value;
-  if (!email || !email.includes('@')) { showToast('⚠️ Please enter a valid email'); return; }
-  document.getElementById('nl-email').value = '';
-  showToast('🎉 Subscribed! Check your inbox soon.');
-}
+// ── NEWSLETTER ──
+window.subscribeNL = function () {
+  const email = document.getElementById("nl-email")?.value;
+  if (!email || !email.includes("@")) { showToast("⚠️ Please enter a valid email"); return; }
+  document.getElementById("nl-email").value = "";
+  showToast("🎉 Subscribed! Check your inbox soon.");
+};
 
-// Countdown Timer
+// ── COUNTDOWN TIMER ──
 function startTimer() {
   let end = new Date().getTime() + (9 * 3600 + 23 * 60 + 45) * 1000;
   function tick() {
-    let diff = end - new Date().getTime();
+    const diff = end - new Date().getTime();
     if (diff < 0) { end = new Date().getTime() + 24 * 3600 * 1000; return; }
-    let h = Math.floor(diff / 3600000);
-    let m = Math.floor((diff % 3600000) / 60000);
-    let s = Math.floor((diff % 60000) / 1000);
-    document.getElementById('t-h').textContent = String(h).padStart(2,'0');
-    document.getElementById('t-m').textContent = String(m).padStart(2,'0');
-    document.getElementById('t-s').textContent = String(s).padStart(2,'0');
+    const h = Math.floor(diff / 3600000);
+    const m = Math.floor((diff % 3600000) / 60000);
+    const s = Math.floor((diff % 60000) / 1000);
+    const th = document.getElementById("t-h");
+    const tm = document.getElementById("t-m");
+    const ts = document.getElementById("t-s");
+    if (th) th.textContent = String(h).padStart(2, "0");
+    if (tm) tm.textContent = String(m).padStart(2, "0");
+    if (ts) ts.textContent = String(s).padStart(2, "0");
   }
   tick();
   setInterval(tick, 1000);
 }
 
-// Scroll Reveal
+// ── SCROLL REVEAL ──
 function observeReveal() {
-  const els = document.querySelectorAll('.reveal');
+  const els = document.querySelectorAll(".reveal:not(.visible)");
   const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); io.unobserve(e.target); } });
-  }, { threshold: 0.15 });
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add("visible"); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12 });
   els.forEach(el => io.observe(el));
 }
-renderProducts();
+
+// ── INIT ──
 startTimer();
 observeReveal();

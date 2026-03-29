@@ -6,29 +6,147 @@
 <title>NOVA SHOP — Premium Store</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
+<style>
+  /* ── AVATAR & DROPDOWN ── */
+  .avatar-wrap {
+    position: relative;
+  }
+
+  .avatar-circle {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--blue-600);
+    color: white;
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 2px solid var(--blue-200);
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .avatar-circle:hover {
+    background: var(--blue-700);
+    transform: scale(1.05);
+  }
+
+  .avatar-dropdown {
+    position: absolute;
+    top: 46px;
+    right: 0;
+    background: white;
+    border: 1px solid var(--gray-200);
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    min-width: 180px;
+    padding: 8px;
+    display: none;
+    z-index: 200;
+    animation: dropDown 0.2s ease;
+  }
+
+  @keyframes dropDown {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .avatar-dropdown.open { display: block; }
+
+  .dropdown-email {
+    font-size: 12px;
+    color: var(--gray-400);
+    padding: 6px 10px 10px;
+    border-bottom: 1px solid var(--gray-100);
+    margin-bottom: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 164px;
+  }
+
+  .dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--gray-700);
+    cursor: pointer;
+    transition: background 0.15s;
+    border: none;
+    background: none;
+    width: 100%;
+    font-family: var(--font-body);
+  }
+
+  .dropdown-item:hover { background: var(--gray-100); }
+  .dropdown-item.red { color: #EF4444; }
+  .dropdown-item.red:hover { background: #FEF2F2; }
+
+  .nav-add-product {
+    background: var(--blue-50);
+    color: var(--blue-700);
+    border: 1.5px solid var(--blue-200);
+    padding: 8px 16px;
+    border-radius: 50px;
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .nav-add-product:hover {
+    background: var(--blue-100);
+    border-color: var(--blue-400);
+  }
+</style>
 </head>
 <body>
 
 <!-- NAVBAR -->
 <nav>
   <a href="#" class="nav-logo">NOVA<span>.</span></a>
-  <ul class="nav-links ">
+  <ul class="nav-links">
     <li><a href="#products">Products</a></li>
     <li><a href="#categories">Categories</a></li>
     <li><a href="#deals">Deals</a></li>
     <li><a href="#about">About</a></li>
   </ul>
 
-  
- <div class="nav-actions">
-  <button onclick="window.location.href='login.html'"  class="nav-login">Login</button>
-  <button onclick="window.location.href='shop.html'" class="nav-signup">Sign Up</button>
+  <div class="nav-actions">
 
-  <button class="nav-cart" onclick="toggleCart()">
-    🛍️ Cart
-    <span class="cart-badge" id="cart-count">0</span>
-  </button>
-</div>
+    <!-- Logged OUT: Login + Signup buttons -->
+    <div id="nav-guest">
+      <button onclick="window.location.href='login.html'" class="nav-login">Login</button>
+      <button onclick="window.location.href='shop.html'" class="nav-signup">Sign Up</button>
+    </div>
+
+    <!-- Logged IN: Add Product + Avatar -->
+    <div id="nav-user" style="display:none; align-items:center; gap:10px;">
+      <button class="nav-add-product" onclick="window.location.href='admin.html'">+ Add Product</button>
+      <div class="avatar-wrap">
+        <div class="avatar-circle" id="avatar-circle" onclick="toggleDropdown()">?</div>
+        <div class="avatar-dropdown" id="avatar-dropdown">
+          <div class="dropdown-email" id="dropdown-email">user@email.com</div>
+          <button class="dropdown-item" onclick="window.location.href='admin.html'">🛠️ Admin Panel</button>
+          <button class="dropdown-item red" onclick="logoutUser()">🚪 Logout</button>
+        </div>
+      </div>
+    </div>
+
+    <button class="nav-cart" onclick="toggleCart()">
+      🛍️ Cart
+      <span class="cart-badge" id="cart-count">0</span>
+    </button>
+  </div>
 </nav>
 
 <!-- HERO -->
@@ -239,7 +357,67 @@
   <span id="toast-msg">Added to cart!</span>
 </div>
 
-<script src="app.js"></script>
-<script src="javascript.js" type="module"></script>
+<script src="app.js" type="module"></script>
+
+<script type="module">
+  import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyD6H0JXLi8aV8rApfmkDeZBgFQk2vGHzxM",
+    authDomain: "login-form-c178f.firebaseapp.com",
+    databaseURL: "https://login-form-c178f-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "login-form-c178f",
+    storageBucket: "login-form-c178f.firebasestorage.app",
+    messagingSenderId: "954559059965",
+    appId: "1:954559059965:web:80fa0f124c714d9d1bab94"
+  };
+
+  const app = getApps().length === 0 ? initializeApp(firebaseConfig) : getApps()[0];
+  const auth = getAuth(app);
+
+  // ── Auth state ──
+  onAuthStateChanged(auth, (user) => {
+    const guestEl = document.getElementById("nav-guest");
+    const userEl  = document.getElementById("nav-user");
+    const avatar  = document.getElementById("avatar-circle");
+    const emailEl = document.getElementById("dropdown-email");
+
+    if (user) {
+      // logged in
+      guestEl.style.display = "none";
+      userEl.style.display  = "flex";
+      const letter = (user.email || user.displayName || "U")[0].toUpperCase();
+      avatar.textContent    = letter;
+      emailEl.textContent   = user.email || user.displayName || "";
+    } else {
+      // logged out
+      guestEl.style.display = "flex";
+      userEl.style.display  = "none";
+    }
+  });
+
+  // ── Logout ──
+  window.logoutUser = function () {
+    signOut(auth).then(() => {
+      document.getElementById("avatar-dropdown").classList.remove("open");
+    });
+  };
+
+  // ── Dropdown toggle ──
+  window.toggleDropdown = function () {
+    document.getElementById("avatar-dropdown").classList.toggle("open");
+  };
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    const wrap = document.getElementById("avatar-circle");
+    const drop = document.getElementById("avatar-dropdown");
+    if (drop && !drop.contains(e.target) && e.target !== wrap) {
+      drop.classList.remove("open");
+    }
+  });
+</script>
+
 </body>
 </html>
